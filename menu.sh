@@ -75,8 +75,8 @@ echo -e "${CYAN}║${NC} [${ORANGE}02${NC}] ${BLUE}VMESS MENU${NC}      ${CYAN}�
 echo -e "${CYAN}║${NC} [${ORANGE}03${NC}] ${BLUE}VLESS MENU${NC}      ${CYAN}│${NC} [${ORANGE}10${NC}] ${BLUE}INFO PORT${NC}       ${CYAN}│${NC} [${ORANGE}17${NC}] ${BLUE}RESTART${NC}        ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC} [${ORANGE}04${NC}] ${BLUE}TROJAN MENU${NC}     ${CYAN}│${NC} [${ORANGE}11${NC}] ${BLUE}SPEEDTEST${NC}       ${CYAN}│${NC} [${ORANGE}18${NC}] ${BLUE}DOMAIN${NC}         ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC} [${ORANGE}05${NC}] ${BLUE}SHADOW MENU${NC}     ${CYAN}│${NC} [${ORANGE}12${NC}] ${BLUE}RUNNING${NC}         ${CYAN}│${NC} [${ORANGE}19${NC}] ${BLUE}CERT SSL${NC}       ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC} [${ORANGE}06${NC}] ${BLUE}TRIAL MENU${NC}      ${CYAN}│${NC} [${ORANGE}13${NC}] ${BLUE}CLEAR LOG${NC}       ${CYAN}│${NC} [${ORANGE}20${NC}] ${BLUE}INS. UDP${NC}       ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC} [${ORANGE}07${NC}] ${BLUE}VPS INFO${NC}        ${CYAN}│${NC} [${ORANGE}14${NC}] ${BLUE}CREATE SLOW${NC}     ${CYAN}│${NC} [${ORANGE}21${NC}] ${BLUE}CLEAR CACHE${NC}    ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} [${ORANGE}06${NC}] ${BLUE}TRIAL MENU${NC}      ${CYAN}│${NC} [${ORANGE}08${NC}] ${BLUE}VPS INFO${NC}        ${CYAN}│${NC} [${ORANGE}20${NC}] ${BLUE}INS. UDP${NC}       ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} [${ORANGE}07${NC}] ${BLUE}CLEAR LOG${NC}       ${CYAN}│${NC} [${ORANGE}14${NC}] ${BLUE}CREATE SLOW${NC}     ${CYAN}│${NC} [${ORANGE}21${NC}] ${BLUE}CLEAR CACHE${NC}    ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC} [${ORANGE}22${NC}] ${BLUE}BOT NOTIF${NC}       ${CYAN}│${NC} [${ORANGE}23${NC}] ${BLUE}UPDATE SCRIPT${NC}   ${CYAN}│${NC} [${ORANGE}24${NC}] ${BLUE}BOT PANEL${NC}      ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC}                                                                 ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC} [${ORANGE}00${NC}] ${BLUE}BACK TO EXIT MENU${NC} ${CYAN}<<<${NC}                                      ${CYAN}║${NC}"
@@ -96,6 +96,9 @@ read -p " Select option [01-24 or 0] : " option
 
 case $option in
   1|01) m-ssh ;;
+  2|02) m-vmess ;;
+  3|03) m-vless ;;
+  4|04) m-trojan ;;
   0|00) exit ;;
   *) 
     echo -e "${RED}Option tidak valid!${NC}" 
