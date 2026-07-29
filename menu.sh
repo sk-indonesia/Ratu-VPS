@@ -6,7 +6,7 @@
 # REPOSITORY  : Ratu-VPS
 # ==================================================
 
-# Kode Warna Terminal (ANSI Escape Codes)
+# Kode Warna Terminal
 NC='\033[0m'
 BG_RED='\033[41;37;1m'
 CYAN='\033[0;36m'
@@ -19,21 +19,14 @@ ORANGE='\033[38;5;208m'
 PURPLE='\033[0;35m'
 WHITE='\033[1;37m'
 
-# Dynamic Data (Mengambil Informasi Sistem Asli)
+# Dynamic Data System
 MYIP=$(wget -qO- ipv4.icanhazip.com 2>/dev/null || echo "127.0.0.1")
 OS_NAME=$(lsb_release -ds 2>/dev/null || cat /etc/issue | head -n1 | awk '{print $1,$2,$3}')
 RAM_TOTAL=$(free -m | awk '/Mem:/ { print $2 }')
 UPTIME_SYS=$(uptime -p | sed 's/up //')
 DATE_NOW=$(date +"%d/%m/%Y")
 TIME_NOW=$(date +"%H:%M:%S")
-DOMAIN_NAME=$(cat /etc/xray/domain 2>/dev/null || echo "ratu.domain.xyz")
-
-# Jumlah Akun (Dapat disesuaikan dengan fungsi backend)
-ACC_SSH=0
-ACC_VMESS=0
-ACC_VLESS=0
-ACC_TROJAN=0
-ACC_SHADOW=0
+DOMAIN_NAME=$(cat /etc/xray/domain 2>/dev/null || echo "$MYIP")
 
 # Pengecekan Masa Lisensi IP
 URL_AUTHO="https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/ip.txt"
@@ -44,7 +37,6 @@ if [ -z "$EXP_DATE" ]; then
     EXP_DATE="2037-12-31"
 fi
 
-# Menghitung sisa hari lisensi
 TODAY_SEC=$(date +%s)
 EXP_SEC=$(date -d "$EXP_DATE" +%s 2>/dev/null || date +%s)
 DAYS_LEFT=$(( (EXP_SEC - TODAY_SEC) / 86400 ))
@@ -70,24 +62,13 @@ printf "${CYAN}║${NC} ${ORANGE}↘${NC} %-17s = ${LIGHT_CYAN}%-41s${CYAN}║\n
 printf "${CYAN}║${NC} ${ORANGE}↘${NC} %-17s = ${LIGHT_CYAN}%-41s${CYAN}║\n" "Domain" "$DOMAIN_NAME"
 echo -e "${CYAN}╚═════════════════════════════════════════════════════════════════╝${NC}"
 
-# 3. INFORMATION ACCOUNT
-echo -e "               ${CYAN}>>>  ${BLUE}INFORMATION ACCOUNT${NC}  ${CYAN}<<<${NC}"
-echo -e "${PURPLE}═════════════════════════════════════════════════════════════════${NC}"
-printf "       %-17s = ${LIGHT_CYAN}%-2d${NC} ${LIGHT_CYAN}ACCOUNT PREMIUM${NC}\n" "SSH/OPENVPN" "$ACC_SSH"
-printf "       %-17s = ${LIGHT_CYAN}%-2d${NC} ${LIGHT_CYAN}ACCOUNT PREMIUM${NC}\n" "VMESS/WS/GRPC" "$ACC_VMESS"
-printf "       %-17s = ${LIGHT_CYAN}%-2d${NC} ${LIGHT_CYAN}ACCOUNT PREMIUM${NC}\n" "VLESS/WS/GRPC" "$ACC_VLESS"
-printf "       %-17s = ${LIGHT_CYAN}%-2d${NC} ${LIGHT_CYAN}ACCOUNT PREMIUM${NC}\n" "TROJAN/WS/GRPC" "$ACC_TROJAN"
-printf "       %-17s = ${LIGHT_CYAN}%-2d${NC} ${LIGHT_CYAN}ACCOUNT PREMIUM${NC}\n" "SHADOW/WS/GRPC" "$ACC_SHADOW"
-echo -e "${PURPLE}═════════════════════════════════════════════════════════════════${NC}"
-
-# 4. STATUS SERVER
+# 3. STATUS SERVER
 echo -e "                  ${CYAN}>>>  ${BLUE}STATUS SERVER${NC}  ${CYAN}<<<${NC}"
 echo -e "${CYAN}╭──────────────────────╮ ╭──────────────────────╮ ╭──────────────────────╮${NC}"
 echo -e "${CYAN}│${NC} SSH     : ${GREEN}ON✓${NC}        ${CYAN}│${NC} ${CYAN}│${NC} NGINX   : ${GREEN}ON✓${NC}        ${CYAN}│${NC} ${CYAN}│${NC} XRAY    : ${GREEN}ON✓${NC}        ${CYAN}│${NC}"
-echo -e "${CYAN}│${NC} WS-ePRO : ${GREEN}ON✓${NC}        ${CYAN}│${NC} ${CYAN}│${NC} DROPBEAR: ${GREEN}ON✓${NC}        ${CYAN}│${NC} ${CYAN}│${NC} HAPROXY : ${GREEN}ON✓${NC}        ${CYAN}│${NC}"
 echo -e "${CYAN}╰──────────────────────╯ ╰──────────────────────╯ ╰──────────────────────╯${NC}"
 
-# 5. GRID MENU
+# 4. GRID MENU
 echo -e "${CYAN}╔═════════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║${NC} [${ORANGE}01${NC}] ${BLUE}SSH MENU${NC}        ${CYAN}│${NC} [${ORANGE}08${NC}] ${BLUE}DELL ALL EXP${NC}    ${CYAN}│${NC} [${ORANGE}15${NC}] ${BLUE}BCKP/RSTR${NC}      ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC} [${ORANGE}02${NC}] ${BLUE}VMESS MENU${NC}      ${CYAN}│${NC} [${ORANGE}09${NC}] ${BLUE}AUTOREBOOT${NC}      ${CYAN}│${NC} [${ORANGE}16${NC}] ${BLUE}REBOOT${NC}         ${CYAN}║${NC}"
@@ -101,7 +82,7 @@ echo -e "${CYAN}║${NC}                                                        
 echo -e "${CYAN}║${NC} [${ORANGE}00${NC}] ${BLUE}BACK TO EXIT MENU${NC} ${CYAN}<<<${NC}                                      ${CYAN}║${NC}"
 echo -e "${CYAN}╚═════════════════════════════════════════════════════════════════╝${NC}"
 
-# 6. FOOTER INFO
+# 5. FOOTER INFO
 echo -e "${CYAN}╔═════════════════════════════════════════════════════════════════╗${NC}"
 printf "${CYAN}║${NC} %-15s = ${LIGHT_CYAN}%-43s${CYAN}║\n" "Version" "V2.0"
 printf "${CYAN}║${NC} %-15s = ${LIGHT_CYAN}%-43s${CYAN}║\n" "User" "RatuSTORE"
@@ -110,5 +91,15 @@ printf "${CYAN}║${NC} %-15s = ${LIGHT_CYAN}%s${NC}( ${RED}%d Days${NC} )${CYAN
 echo -e "${CYAN}╚═════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
-# PROMPT INPUT
-read -p "Select menu : " option
+# PROMPT INPUT & NAVIGASI
+read -p " Select option [01-24 or 0] : " option
+
+case $option in
+  1|01) m-ssh ;;
+  0|00) exit ;;
+  *) 
+    echo -e "${RED}Option tidak valid!${NC}" 
+    sleep 1 
+    menu 
+    ;;
+esac
