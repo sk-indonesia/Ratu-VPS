@@ -61,13 +61,22 @@ echo -e "${BLUE}[3/4] Configuring Xray & Nginx Directories...${NC}"
 mkdir -p /etc/xray
 mkdir -p /var/log/xray
 
-# D. Install Menu Utama & Sub-Menu SSH Terminal
+# D. Install Menu Utama & Seluruh Sub-Menu
 echo -e "${BLUE}[4/4] Installing Ratu Store Command Interface...${NC}"
 wget -O /usr/bin/menu "https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/menu.sh"
 chmod +x /usr/bin/menu
 
 wget -O /usr/bin/m-ssh "https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/m-ssh.sh"
 chmod +x /usr/bin/m-ssh
+
+wget -O /usr/bin/m-vmess "https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/m-vmess.sh"
+chmod +x /usr/bin/m-vmess
+
+wget -O /usr/bin/m-vless "https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/m-vless.sh"
+chmod +x /usr/bin/m-vless
+
+wget -O /usr/bin/m-trojan "https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/m-trojan.sh"
+chmod +x /usr/bin/m-trojan
 
 # Set Auto-Start Service
 systemctl enable xray
