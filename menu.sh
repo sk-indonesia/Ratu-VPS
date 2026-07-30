@@ -28,7 +28,7 @@ CPU_MODEL=$(lscpu 2>/dev/null | grep "Model name" | cut -d: -f2 | sed -e 's/^[ \
 if [ -z "$CPU_MODEL" ]; then
     CPU_MODEL=$(grep -m1 "model name" /proc/cpuinfo 2>/dev/null | cut -d: -f2 | sed -e 's/^[ \t]*//')
 fi
-[ -z "$CPU_MODEL" ] && CPU_MODEL="Standard ARM/x86 Processor"
+[ -z "$CPU_MODEL" ] && CPU_MODEL="Cortex-A53"
 
 RAM_TOTAL=$(free -m 2>/dev/null | awk '/Mem:/ { print $2 }')
 [ -z "$RAM_TOTAL" ] && RAM_TOTAL="5761"
@@ -56,20 +56,32 @@ DAYS_LEFT=$(( (EXP_SEC - TODAY_SEC) / 86400 ))
 
 clear
 
+# Format Cetak Baris System Info (Lebar Pas 65 Karakter)
+print_info() {
+    local label="$1"
+    local value="$2"
+    local raw_str=" ↘ $label = $value"
+    local len=${#raw_str}
+    local pad=$((59 - len))
+    [ $pad -lt 0 ] && pad=0
+    local spaces=$(printf '%*s' "$pad" '')
+    echo -e "${CYAN}║${NC} ${ORANGE}↘${NC} ${label} = ${LIGHT_CYAN}${value}${NC}${spaces}${CYAN}║${NC}"
+}
+
 # 1. HEADER UTAMA
 echo -e "${CYAN}╔═════════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║${BG_RED}             Welcome To Script Premium Ratu Store                ${NC}${CYAN}║${NC}"
 echo -e "${CYAN}╠═════════════════════════════════════════════════════════════════╣${NC}"
 
 # 2. SYSTEM INFO
-printf "${CYAN}║${NC} ${ORANGE}↘${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "System OS" "$OS_NAME"
-printf "${CYAN}║${NC} ${ORANGE}↘${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "CPU Model" "$CPU_MODEL"
-printf "${CYAN}║${NC} ${ORANGE}↘${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "Server RAM" "$RAM_TOTAL MB"
-printf "${CYAN}║${NC} ${ORANGE}↘${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "Uptime Server" "$UPTIME_SYS"
-printf "${CYAN}║${NC} ${ORANGE}↘${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "Date" "$DATE_NOW"
-printf "${CYAN}║${NC} ${ORANGE}↘${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "Time" "$TIME_NOW"
-printf "${CYAN}║${NC} ${ORANGE}↘${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "IP VPS" "$MYIP"
-printf "${CYAN}║${NC} ${ORANGE}↘${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "Domain" "$DOMAIN_NAME"
+print_info "System OS" "$OS_NAME"
+print_info "CPU Model" "$CPU_MODEL"
+print_info "Server RAM" "$RAM_TOTAL MB"
+print_info "Uptime Server" "$UPTIME_SYS"
+print_info "Date" "$DATE_NOW"
+print_info "Time" "$TIME_NOW"
+print_info "IP VPS" "$MYIP"
+print_info "Domain" "$DOMAIN_NAME"
 echo -e "${CYAN}╚═════════════════════════════════════════════════════════════════╝${NC}"
 
 # 3. STATUS SERVER
@@ -78,27 +90,26 @@ echo -e "${CYAN}╭────────────────────�
 echo -e "${CYAN}│${NC} SSH     : ${GREEN}ON✓${NC}        ${CYAN}│${NC} ${CYAN}│${NC} NGINX   : ${GREEN}ON✓${NC}        ${CYAN}│${NC} ${CYAN}│${NC} XRAY    : ${GREEN}ON✓${NC}        ${CYAN}│${NC}"
 echo -e "${CYAN}╰──────────────────────╯ ╰──────────────────────╯ ╰──────────────────────╯${NC}"
 
-# 4. GRID MENU
+# 4. GRID MENU (Penomoran Urut 01 - 24)
 echo -e "${CYAN}╔═════════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║${NC} [${ORANGE}01${NC}] ${BLUE}SSH MENU${NC}        ${CYAN}│${NC} [${ORANGE}08${NC}] ${BLUE}DELL ALL EXP${NC}    ${CYAN}│${NC} [${ORANGE}15${NC}] ${BLUE}BCKP/RSTR${NC}      ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC} [${ORANGE}02${NC}] ${BLUE}VMESS MENU${NC}      ${CYAN}│${NC} [${ORANGE}09${NC}] ${BLUE}AUTOREBOOT${NC}      ${CYAN}│${NC} [${ORANGE}16${NC}] ${BLUE}REBOOT${NC}         ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC} [${ORANGE}03${NC}] ${BLUE}VLESS MENU${NC}      ${CYAN}│${NC} [${ORANGE}10${NC}] ${BLUE}INFO PORT${NC}       ${CYAN}│${NC} [${ORANGE}17${NC}] ${BLUE}RESTART${NC}        ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC} [${ORANGE}04${NC}] ${BLUE}TROJAN MENU${NC}     ${CYAN}│${NC} [${ORANGE}11${NC}] ${BLUE}SPEEDTEST${NC}       ${CYAN}│${NC} [${ORANGE}18${NC}] ${BLUE}DOMAIN${NC}         ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC} [${ORANGE}05${NC}] ${BLUE}SHADOW MENU${NC}     ${CYAN}│${NC} [${ORANGE}12${NC}] ${BLUE}RUNNING${NC}         ${CYAN}│${NC} [${ORANGE}19${NC}] ${BLUE}CERT SSL${NC}       ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC} [${ORANGE}06${NC}] ${BLUE}TRIAL MENU${NC}      ${CYAN}│${NC} [${ORANGE}13${NC}] ${BLUE}VPS INFO${NC}        ${CYAN}│${NC} [${ORANGE}20${NC}] ${BLUE}INS. UDP${NC}       ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC} [${ORANGE}07${NC}] ${BLUE}CLEAR LOG${NC}       ${CYAN}│${NC} [${ORANGE}14${NC}] ${BLUE}CREATE SLOW${NC}     ${CYAN}│${NC} [${ORANGE}21${NC}] ${BLUE}CLEAR CACHE${NC}    ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC} [${ORANGE}22${NC}] ${BLUE}BOT NOTIF${NC}       ${CYAN}│${NC} [${ORANGE}23${NC}] ${BLUE}UPDATE SCRIPT${NC}   ${CYAN}│${NC} [${ORANGE}24${NC}] ${BLUE}BOT PANEL${NC}      ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} [${ORANGE}01${NC}] ${BLUE}SSH MENU${NC}        ${CYAN}│${NC} [${ORANGE}09${NC}] ${BLUE}AUTOREBOOT${NC}      ${CYAN}│${NC} [${ORANGE}17${NC}] ${BLUE}RESTART${NC}        ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} [${ORANGE}02${NC}] ${BLUE}VMESS MENU${NC}      ${CYAN}│${NC} [${ORANGE}10${NC}] ${BLUE}INFO PORT${NC}       ${CYAN}│${NC} [${ORANGE}18${NC}] ${BLUE}DOMAIN${NC}         ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} [${ORANGE}03${NC}] ${BLUE}VLESS MENU${NC}      ${CYAN}│${NC} [${ORANGE}11${NC}] ${BLUE}SPEEDTEST${NC}       ${CYAN}│${NC} [${ORANGE}19${NC}] ${BLUE}CERT SSL${NC}       ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} [${ORANGE}04${NC}] ${BLUE}TROJAN MENU${NC}     ${CYAN}│${NC} [${ORANGE}12${NC}] ${BLUE}RUNNING${NC}         ${CYAN}│${NC} [${ORANGE}20${NC}] ${BLUE}INS. UDP${NC}       ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} [${ORANGE}05${NC}] ${BLUE}SHADOW MENU${NC}     ${CYAN}│${NC} [${ORANGE}13${NC}] ${BLUE}VPS INFO${NC}        ${CYAN}│${NC} [${ORANGE}21${NC}] ${BLUE}CLEAR CACHE${NC}    ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} [${ORANGE}06${NC}] ${BLUE}TRIAL MENU${NC}      ${CYAN}│${NC} [${ORANGE}14${NC}] ${BLUE}CREATE SLOW${NC}     ${CYAN}│${NC} [${ORANGE}22${NC}] ${BLUE}BOT NOTIF${NC}       ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} [${ORANGE}07${NC}] ${BLUE}CLEAR LOG${NC}       ${CYAN}│${NC} [${ORANGE}15${NC}] ${BLUE}BCKP/RSTR${NC}      ${CYAN}│${NC} [${ORANGE}23${NC}] ${BLUE}UPDATE SCRIPT${NC}   ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} [${ORANGE}08${NC}] ${BLUE}DELL ALL EXP${NC}    ${CYAN}│${NC} [${ORANGE}16${NC}] ${BLUE}REBOOT${NC}         ${CYAN}│${NC} [${ORANGE}24${NC}] ${BLUE}BOT PANEL${NC}      ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC}                                                                 ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC} [${ORANGE}00${NC}] ${BLUE}BACK TO EXIT MENU${NC} ${CYAN}<<<${NC}                                      ${CYAN}║${NC}"
 echo -e "${CYAN}╚═════════════════════════════════════════════════════════════════╝${NC}"
 
 # 5. FOOTER INFO
-EXP_TXT="${EXP_DATE} (${DAYS_LEFT} Days)"
 echo -e "${CYAN}╔═════════════════════════════════════════════════════════════════╗${NC}"
-printf "${CYAN}║${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "Version" "V2.0"
-printf "${CYAN}║${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "User" "RatuSTORE"
-printf "${CYAN}║${NC} %-15s = ${GREEN}%-43.43s${CYAN}║\n" "Script Status" "Active"
-printf "${CYAN}║${NC} %-15s = ${LIGHT_CYAN}%-43.43s${CYAN}║\n" "Expiry script" "$EXP_TXT"
+echo -e "${CYAN}║${NC} Version         = ${LIGHT_CYAN}V2.0${NC}                                          ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} User            = ${LIGHT_CYAN}RatuSTORE${NC}                                     ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} Script Status   = ${GREEN}Active${NC}                                        ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} Expiry script   = ${LIGHT_CYAN}${EXP_DATE}${NC} (${RED}${DAYS_LEFT} Days${NC})                           ${CYAN}║${NC}"
 echo -e "${CYAN}╚═════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
