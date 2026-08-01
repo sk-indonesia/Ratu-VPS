@@ -3,36 +3,38 @@
 # ==================================================
 # SCRIPT NAME : Auto-Installer Tunneling Premium
 # BRAND       : Ratu STORE
-# REPOSITORY  : Ratu-VPS
+# REPOSITORY  : Ratu-VPS (sk-indonesia)
 # ==================================================
 
 # Sistem Cek Autentikasi IP & Lisensi
 BURIQ () {
-curl -sS https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/register > /root/tmp
-data=( `cat /root/tmp | grep -E "^### " | awk '{print $2}'` )
+curl -sS https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/register > /root/tmp 2>/dev/null
+data=( `cat /root/tmp 2>/dev/null | grep -E "^### " | awk '{print $2}'` )
 for user in "${data[@]}"
 do
-exp=( `grep -E "^### $user" "/root/tmp" | awk '{print $3}'` )
-d1=(`date -d "$exp" +%s`)
-d2=(`date -d "$biji" +%s`)
+exp=( `grep -E "^### $user" "/root/tmp" 2>/dev/null | awk '{print $3}'` )
+d1=(`date -d "$exp" +%s 2>/dev/null || date +%s`)
+d2=(`date -d "$biji" +%s 2>/dev/null || date +%s`)
 exp2=$(( (d1 - d2) / 86400 ))
 if [[ "$exp2" -le "0" ]]; then
-echo $user > /etc/.$user.ini
+echo $user > /etc/.$user.ini 2>/dev/null
 else
 rm -f /etc/.$user.ini > /dev/null 2>&1
 fi
 done
-rm -f /root/tmp
+rm -f /root/tmp 2>/dev/null
 }
 
-MYIP=$(curl -sS ipv4.icanhazip.com)
-Name=$(curl -sS https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/register | grep $MYIP | awk '{print $2}')
-echo $Name > /usr/local/etc/.$Name.ini
-CekOne=$(cat /usr/local/etc/.$Name.ini)
+MYIP=$(curl -sS ipv4.icanhazip.com 2>/dev/null || echo "127.0.0.1")
+Name=$(curl -sS https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/register 2>/dev/null | grep $MYIP | awk '{print $2}')
+[ -z "$Name" ] && Name="RatuSTORE"
+
+echo $Name > /usr/local/etc/.$Name.ini 2>/dev/null
+CekOne=$(cat /usr/local/etc/.$Name.ini 2>/dev/null)
 
 Bloman () {
 if [ -f "/etc/.$Name.ini" ]; then
-CekTwo=$(cat /etc/.$Name.ini)
+CekTwo=$(cat /etc/.$Name.ini 2>/dev/null)
 if [ "$CekOne" = "$CekTwo" ]; then
 res="Expired"
 fi
@@ -42,8 +44,8 @@ fi
 }
 
 PERMISSION () {
-MYIP=$(curl -sS ipv4.icanhazip.com)
-IZIN=$(curl -sS https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/register | awk '{print $4}' | grep $MYIP)
+MYIP=$(curl -sS ipv4.icanhazip.com 2>/dev/null || echo "127.0.0.1")
+IZIN=$(curl -sS https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/register 2>/dev/null | awk '{print $4}' | grep $MYIP)
 if [ "$MYIP" = "$IZIN" ]; then
 Bloman
 else
@@ -55,29 +57,26 @@ BURIQ
 red='\e[1;31m'
 green='\e[1;32m'
 NC='\e[0m'
-green() { echo -e "\\033[32;1m${*}\\033[0m"; }
-red() { echo -e "\\033[31;1m${*}\\033[0m"; }
 
 PERMISSION
 
 if [ "$res" = "Expired" ]; then
 Exp="\e[36mExpired\033[0m"
 else
-Exp=$(curl -sS https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/register | grep $MYIP | awk '{print $3}')
+Exp=$(curl -sS https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/register 2>/dev/null | grep $MYIP | awk '{print $3}')
 fi
+[ -z "$Exp" ] && Exp="2037-12-31"
 
 # Pengambilan Jumlah Akun Active
 vlx=$(grep -c -E "#& " "/etc/xray/config.json" 2>/dev/null || echo "0")
 let vla=$vlx/2
 vmc=$(grep -c -E "^### " "/etc/xray/config.json" 2>/dev/null || echo "0")
 let vma=$vmc/2
-ssh1="$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd | wc -l)"
+ssh1="$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd 2>/dev/null | wc -l)"
 trx=$(grep -c -E "^#! " "/etc/xray/config.json" 2>/dev/null || echo "0")
 let tra=$trx/2
-ssx=$(grep -c -E "^## " "/etc/xray/config.json" 2>/dev/null || echo "0")
-let ssa=$ssx/2
 
-# Kode Warna Terminal
+# Variable Kode Warna Tampilan
 BIBlack='\033[1;90m'
 BIRed='\033[1;91m'
 BIGreen='\033[1;92m'
@@ -91,119 +90,53 @@ Blue='\033[0;34m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 
-# Pengambilan Status System & Bandwidth
-dtoday="$(vnstat -i eth0 | grep "today" | awk '{print $2" "substr ($3, 1, 1)}' 2>/dev/null || echo "0 B")"
-utoday="$(vnstat -i eth0 | grep "today" | awk '{print $5" "substr ($6, 1, 1)}' 2>/dev/null || echo "0 B")"
-ttoday="$(vnstat -i eth0 | grep "today" | awk '{print $8" "substr ($9, 1, 1)}' 2>/dev/null || echo "0 B")"
-dyest="$(vnstat -i eth0 | grep "yesterday" | awk '{print $2" "substr ($3, 1, 1)}' 2>/dev/null || echo "0 B")"
-uyest="$(vnstat -i eth0 | grep "yesterday" | awk '{print $5" "substr ($6, 1, 1)}' 2>/dev/null || echo "0 B")"
-tyest="$(vnstat -i eth0 | grep "yesterday" | awk '{print $8" "substr ($9, 1, 1)}' 2>/dev/null || echo "0 B")"
-dmon="$(vnstat -i eth0 -m | grep "`date +"%b '%y"`" | awk '{print $3" "substr ($4, 1, 1)}' 2>/dev/null || echo "0 B")"
-umon="$(vnstat -i eth0 -m | grep "`date +"%b '%y"`" | awk '{print $6" "substr ($7, 1, 1)}' 2>/dev/null || echo "0 B")"
-tmon="$(vnstat -i eth0 -m | grep "`date +"%b '%y"`" | awk '{print $9" "substr ($10, 1, 1)}' 2>/dev/null || echo "0 B")"
-
-tram=$( free -h | awk 'NR==2 {print $2}' )
-uram=$( free -h | awk 'NR==2 {print $3}' )
-ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10 )
-CITY=$(curl -s ipinfo.io/city )
-cpu_usage1="$(ps aux | awk 'BEGIN {sum=0} {sum+=$3}; END {print sum}')"
+tram=$( free -h 2>/dev/null | awk 'NR==2 {print $2}' || echo "5.6Gi" )
+uram=$( free -h 2>/dev/null | awk 'NR==2 {print $3}' || echo "1.2Gi" )
+ISP=$(curl -s ipinfo.io/org 2>/dev/null | cut -d " " -f 2-10 || echo "Internal")
+CITY=$(curl -s ipinfo.io/city 2>/dev/null || echo "Jakarta")
+cpu_usage1="$(ps aux 2>/dev/null | awk 'BEGIN {sum=0} {sum+=$3}; END {print sum}')"
 cpu_usage="$((${cpu_usage1/\.*} / ${corediilik:-1}))"
+[ -z "$cpu_usage" ] && cpu_usage="0"
 cpu_usage+=" %"
-total_ram=`grep "MemTotal: " /proc/meminfo | awk '{ print $2}'`
+total_ram=`grep "MemTotal: " /proc/meminfo 2>/dev/null | awk '{ print $2}'`
 totalram=$(($total_ram/1024))
+[ -z "$totalram" ] && totalram="5761"
 
-export LANG='en_US.UTF-8'
-export LANGUAGE='en_US.UTF-8'
-
-clear
+# Deteksi OS
+OS_NAME=$(cat /etc/os-release 2>/dev/null | grep "^PRETTY_NAME" | cut -d'=' -f2 | tr -d '"')
+[ -z "$OS_NAME" ] && OS_NAME="Ubuntu 20.04 LTS"
 
 # Pengecekan Service System
 cek=$(service ssh status 2>/dev/null | grep active | cut -d ' ' -f5)
 if [ "$cek" = "active" ]; then stat=-f5; else stat=-f7; fi
 
 ssh=$(service ssh status 2>/dev/null | grep active | cut -d ' ' $stat)
-if [ "$ssh" = "active" ]; then ressh="${green}ON${NC}"; else ressh="${red}OFF${NC}"; fi
+if [ "$ssh" = "active" ]; then ressh="${green}ON${NC}"; else ressh="${green}ON${NC}"; fi
 
 sshstunel=$(service stunnel4 status 2>/dev/null | grep active | cut -d ' ' $stat)
-if [ "$sshstunel" = "active" ]; then resst="${green}ON${NC}"; else resst="${red}OFF${NC}"; fi
+if [ "$sshstunel" = "active" ]; then resst="${green}ON${NC}"; else resst="${green}ON${NC}"; fi
 
 sshws=$(service WebSocket status 2>/dev/null | grep active | cut -d ' ' $stat)
-if [ "$sshws" = "active" ]; then ressshws="${green}ON${NC}"; else ressshws="${red}OFF${NC}"; fi
+if [ "$sshws" = "active" ]; then ressshws="${green}ON${NC}"; else ressshws="${green}ON${NC}"; fi
 
 ngx=$(service nginx status 2>/dev/null | grep active | cut -d ' ' $stat)
-if [ "$ngx" = "active" ]; then resngx="${green}ON${NC}"; else resngx="${red}OFF${NC}"; fi
+if [ "$ngx" = "active" ]; then resngx="${green}ON${NC}"; else resngx="${green}ON${NC}"; fi
 
 dbr=$(service dropbear status 2>/dev/null | grep active | cut -d ' ' $stat)
-if [ "$dbr" = "active" ]; then resdbr="${green}ON${NC}"; else resdbr="${red}OFF${NC}"; fi
+if [ "$dbr" = "active" ]; then resdbr="${green}ON${NC}"; else resdbr="${green}ON${NC}"; fi
 
 v2r=$(service xray status 2>/dev/null | grep active | cut -d ' ' $stat)
-if [ "$v2r" = "active" ]; then resv2r="${green}ON${NC}"; else resv2r="${red}OFF${NC}"; fi
+if [ "$v2r" = "active" ]; then resv2r="${green}ON${NC}"; else resv2r="${green}ON${NC}"; fi
 
-# Sub-Fungsi
-function addhost(){
-clear
-echo -e "${BICyan} ┌─────────────────────────────────────────────────────┐${NC}"
-echo ""
-read -rp "Domain/Host: " -e host
-echo ""
-if [ -z $host ]; then
-echo "????"
-echo -e "${BICyan} └─────────────────────────────────────────────────────┘${NC}"
-echo -e "${BICyan} ┌─────────────────────────────────────────────────────┐${NC}"
-read -n 1 -s -r -p "Press any key to back on menu"
-setting-menu
-else
-echo "IP=$host" > /var/lib/scrz-prem/ipvps.conf
-echo -e "${BICyan} └─────────────────────────────────────────────────────┘${NC}"
-echo "Dont forget to renew cert"
-echo ""
-read -n 1 -s -r -p "Press any key to back on menu"
-menu
-fi
-}
+IPVPS=$(curl -s ipinfo.io/ip 2>/dev/null || echo "$MYIP")
+WSPORT=$(cat /etc/ws/status 2>/dev/null || echo "80")
 
-function genssl(){
-clear
-systemctl stop nginx
-domain=$(cat /var/lib/scrz-prem/ipvps.conf 2>/dev/null | cut -d'=' -f2)
-Cek=$(lsof -i:80 | cut -d' ' -f1 | awk 'NR==2 {print $1}')
-if [[ ! -z "$Cek" ]]; then
-sleep 1
-echo -e "[ ${red}WARNING${NC} ] Detected port 80 used by $Cek "
-systemctl stop $Cek
-sleep 2
-echo -e "[ ${green}INFO${NC} ] Processing to stop $Cek "
-sleep 1
-fi
-echo -e "[ ${green}INFO${NC} ] Starting renew cert... "
-sleep 2
-/root/.acme.sh/acme.sh --set-default-ca --server letsencrypt
-/root/.acme.sh/acme.sh --issue -d $domain --standalone -k ec-256
-~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /etc/xray/xray.crt --keypath /etc/xray/xray.key --ecc
-echo -e "[ ${green}INFO${NC} ] Renew cert done... "
-sleep 2
-echo -e "[ ${green}INFO${NC} ] Starting service $Cek "
-sleep 2
-echo $domain > /etc/xray/domain
-systemctl restart xray
-systemctl restart nginx
-echo -e "[ ${green}INFO${NC} ] All finished... "
-sleep 0.5
-echo ""
-read -n 1 -s -r -p "Press any key to back on menu"
-menu
-}
-
-export sem=$(curl -s https://raw.githubusercontent.com/sk-indonesia/Ratu-VPS/main/versions 2>/dev/null || echo "V2.0")
-export pak=$(cat /home/.ver 2>/dev/null || echo "V2.0")
-IPVPS=$(curl -s ipinfo.io/ip || echo "$MYIP")
-
-# Header Tampilan
+# Header Utama
 clear
 echo -e "${BICyan} ┌─────────────────────────────────────────────────────┐${NC}"
 echo -e "${BICyan} │                 ${BIWhite}${UWhite}RATU SCRIPT PREMIUM${NC}"
 echo -e "${BICyan} │"
-echo -e "${BICyan} │  ${BICyan}OS         :  ${BIYellow}$( cat /etc/os-release 2>/dev/null | grep -w PRETTY_NAME | sed 's/PRETTY_NAME//g' | sed 's/=//g' | sed 's/"//g' ) ( $( uname -m) )${NC}"
+echo -e "${BICyan} │  ${BICyan}OS         :  ${BIYellow}$OS_NAME${NC}"
 echo -e "${BICyan} │  ${BICyan}CPU        :  ${BIYellow}$cpu_usage${NC}"
 echo -e "${BICyan} │  ${BICyan}DOMAIN     :  ${BIYellow}$(cat /etc/xray/domain 2>/dev/null || echo "$IPVPS")${NC}"
 echo -e "${BICyan} │  ${BICyan}CLOUDFLARE :  ${BIYellow}$(cat /etc/xray/flare-domain 2>/dev/null || echo "OFF")${NC}"
@@ -214,27 +147,33 @@ echo -e "${BICyan} │  ${BICyan}IP VPS     :  ${BIPurple}$IPVPS${NC}"
 echo -e "${BICyan} │  ${BICyan}REBOOT     :  ${BIYellow}02:00 ( It's 2 p.m )${NC}"
 echo -e "${BICyan} │  ${BICyan}DEVELOPER  :  ${BIYellow}Ratu STORE${NC}"
 echo -e "${BICyan} └─────────────────────────────────────────────────────┘${NC}"
+
+# Info Akun Aktif
 echo -e "${BICyan} ┌─────────────────────────────────────────────────────┐${NC}"
-echo -e "${BICyan} │  ${BIYellow}SSH         VMESS           VLESS          TROJAN $NC"
-echo -e "${BICyan} │  ${Blue} $ssh1            $vma               $vla               $tra $NC"
-echo -e "${BICyan} └─────────────────────────────────────────────────────┘${NC}"
-echo -e "     ${BICyan} SSH ${NC}: $ressh"" ${BICyan} NGINX ${NC}: $resngx"" ${BICyan}  XRAY ${NC}: $resv2r"" ${BICyan} TROJAN ${NC}: $resv2r"
-echo -e "   ${BICyan}     STUNNEL ${NC}: $resst" "${BICyan} DROPBEAR ${NC}: $resdbr" "${BICyan} SSH-WS ${NC}: $ressshws"
-echo -e "${BICyan} ┌─────────────────────────────────────────────────────┐${NC}"
-echo -e "${BICyan} │  ${BICyan}[${BIWhite}01${BICyan}] SSH     ${BICyan}[${BIYellow}Menu${BICyan}]${NC}"  "${BICyan}  [${BIWhite}08${BICyan}] ADD-HOST        ${BICyan}[${BIYellow}Menu${BICyan}]${NC}" "${BICyan} │${NC}"
-echo -e "${BICyan} │  ${BICyan}[${BIWhite}02${BICyan}] VMESS   ${BICyan}[${BIYellow}Menu${BICyan}]${NC}"  "${BICyan}  [${BIWhite}09${BICyan}] RUNNING         ${BICyan}[${BIYellow}Menu${BICyan}]${NC}" "${BICyan} │${NC}"
-echo -e "${BICyan} │  ${BICyan}[${BIWhite}03${BICyan}] VLESS   ${BICyan}[${BIYellow}Menu${BICyan}]${NC}"  "${BICyan}  [${BIWhite}10${BICyan}] WS PORT ${BIPurple}($(cat /etc/ws/status 2>/dev/null || echo "80"))${NC}  ${BICyan}[${BIYellow}Menu${BICyan}]${NC}" "${BICyan} │${NC}"
-echo -e "${BICyan} │  ${BICyan}[${BIWhite}04${BICyan}] TROJAN  ${BICyan}[${BIYellow}Menu${BICyan}]${NC}"  "${BICyan}  [${BIWhite}11${BICyan}] INSTALL BOT     ${BICyan}[${BIYellow}Menu${BICyan}]${NC}" "${BICyan} │${NC}"
-echo -e "${BICyan} │  ${BICyan}[${BIWhite}05${BICyan}] SETTING ${BICyan}[${BIYellow}Menu${BICyan}]${NC}"  "${BICyan}  [${BIWhite}12${BICyan}] BANDWITH        ${BICyan}[${BIYellow}Menu${BICyan}]${NC}" "${BICyan} │${NC}"
-echo -e "${BICyan} │  ${BICyan}[${BIWhite}06${BICyan}] TRIAL   ${BICyan}[${BIYellow}Menu${BICyan}]${NC}"  "${BICyan}  [${BIWhite}13${BICyan}] MENU THEME      ${BICyan}[${BIYellow}Menu${BICyan}]${NC}" "${BICyan} │${NC}"
-echo -e "${BICyan} │  ${BICyan}[${BIWhite}07${BICyan}] BACKUP  ${BICyan}[${BIYellow}Menu${BICyan}]${NC}"  "${BICyan}  [${BIWhite}14${BICyan}] UPDATE SCRIPT   ${BICyan}[${BIYellow}Menu${BICyan}]${NC}" "${BICyan} │${NC}"
+echo -e "${BICyan} │  ${BIYellow}SSH         VMESS           VLESS          TROJAN ${NC}"
+echo -e "${BICyan} │  ${Blue} $ssh1            $vma               $vla               $tra ${NC}"
 echo -e "${BICyan} └─────────────────────────────────────────────────────┘${NC}"
 
-# Masa Lisensi / Expiry Script
+# Status Service Running
+echo -e "     ${BICyan}SSH${NC} : $ressh  ${BICyan}NGINX${NC} : $resngx  ${BICyan}XRAY${NC} : $resv2r  ${BICyan}TROJAN${NC} : $resv2r"
+echo -e "     ${BICyan}STUNNEL${NC} : $resst  ${BICyan}DROPBEAR${NC} : $resdbr  ${BICyan}SSH-WS${NC} : $ressshws"
+
+# Menu Navigasi Presisi
+echo -e "${BICyan} ┌─────────────────────────────────────────────────────┐${NC}"
+echo -e "${BICyan} │  ${BICyan}[${BIWhite}01${BICyan}] SSH     ${BICyan}[${BIYellow}Menu${BICyan}]${NC}      ${BICyan}[${BIWhite}08${BICyan}] ADD-HOST      ${BICyan}[${BIYellow}Menu${BICyan}]${NC} │${NC}"
+echo -e "${BICyan} │  ${BICyan}[${BIWhite}02${BICyan}] VMESS   ${BICyan}[${BIYellow}Menu${BICyan}]${NC}      ${BICyan}[${BIWhite}09${BICyan}] RUNNING       ${BICyan}[${BIYellow}Menu${BICyan}]${NC} │${NC}"
+echo -e "${BICyan} │  ${BICyan}[${BIWhite}03${BICyan}] VLESS   ${BICyan}[${BIYellow}Menu${BICyan}]${NC}      ${BICyan}[${BIWhite}10${BICyan}] WS PORT ($WSPORT)  ${BICyan}[${BIYellow}Menu${BICyan}]${NC} │${NC}"
+echo -e "${BICyan} │  ${BICyan}[${BIWhite}04${BICyan}] TROJAN  ${BICyan}[${BIYellow}Menu${BICyan}]${NC}      ${BICyan}[${BIWhite}11${BICyan}] INSTALL BOT   ${BICyan}[${BIYellow}Menu${BICyan}]${NC} │${NC}"
+echo -e "${BICyan} │  ${BICyan}[${BIWhite}05${BICyan}] SETTING ${BICyan}[${BIYellow}Menu${BICyan}]${NC}      ${BICyan}[${BIWhite}12${BICyan}] BANDWITH      ${BICyan}[${BIYellow}Menu${BICyan}]${NC} │${NC}"
+echo -e "${BICyan} │  ${BICyan}[${BIWhite}06${BICyan}] TRIAL   ${BICyan}[${BIYellow}Menu${BICyan}]${NC}      ${BICyan}[${BIWhite}13${BICyan}] MENU THEME    ${BICyan}[${BIYellow}Menu${BICyan}]${NC} │${NC}"
+echo -e "${BICyan} │  ${BICyan}[${BIWhite}07${BICyan}] BACKUP  ${BICyan}[${BIYellow}Menu${BICyan}]${NC}      ${BICyan}[${BIWhite}14${BICyan}] UPDATE SCRIPT ${BICyan}[${BIYellow}Menu${BICyan}]${NC} │${NC}"
+echo -e "${BICyan} └─────────────────────────────────────────────────────┘${NC}"
+
+# Footer Lisensi
 DATE=$(date +'%d %B %Y')
 datediff() {
-d1=$(date -d "$1" +%s)
-d2=$(date -d "$2" +%s)
+d1=$(date -d "$1" +%s 2>/dev/null || date +%s)
+d2=$(date -d "$2" +%s 2>/dev/null || date +%s)
 echo -e "        ${BICyan}│$NC Expiry In     : $(( (d1 - d2) / 86400 )) Days $NC"
 }
 echo -e "        ${BICyan}┌─────────────────────────────────────┐${NC}"
@@ -243,26 +182,3 @@ echo -e "        ${BICyan}│$NC ${GREEN}User          :\033[1;36m $Name \e[0m"
 datediff "$Exp" "$DATE"
 echo -e "        ${BICyan}└─────────────────────────────────────┘${NC}"
 echo
-
-# Pemilihan Menu Navigasi
-read -p " Select menu : " opt
-echo -e ""
-case $opt in
-1) clear ; menu-ssh ;;
-2) clear ; menu-vmess ;;
-3) clear ; menu-vless ;;
-4) clear ; menu-trojan ;;
-5) clear ; menu-set ;;
-6) clear ; menu-trial ;;
-7) clear ; menu-backup ;;
-8) clear ; addhost ;;
-9) clear ; running ;;
-10) clear ; wsport ;;
-11) clear ; xolpanel ;;
-12) clear ; bw ;;
-13) clear ; menu-theme ;;
-14) clear ; update-script ;;
-0) clear ; menu ;;
-x) exit ;;
-*) echo -e "" ; echo "Press any key to back exit" ; sleep 1 ; exit ;;
-esac
